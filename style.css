@@ -53,12 +53,11 @@ body {
 
 .app-container {
     display: grid;
-    /* KHUNG NHÌN MỚI: 3 CỘT trên màn hình máy tính rộng */
-    grid-template-columns: 5fr 3fr 3fr; 
+    grid-template-columns: 7fr 3fr; 
     gap: 1.5rem; 
     width: 98%; 
-    max-width: 1400px; /* Tăng max-width để cho phép màn hình to dàn ngang */
-    height: 90vh; 
+    max-width: 1200px; 
+    height: 90vh; /* Giảm để dứt điểm vụ tràn màn hình */
     max-height: 900px; 
 }
 
@@ -174,10 +173,10 @@ body {
 }
 
 .top-right-controls {
-    position: absolute; /* Đã đổi từ fixed sang absolute để trôi theo cuộn trang */
+    position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 10000;
+    z-index: 9999;
     display: flex;
     gap: 15px;
     align-items: center;
@@ -600,12 +599,12 @@ body {
 }
 
 .notes-card {
-    padding: 0.8rem;
+    padding: 0.6rem;
     display: flex;
     flex-direction: column;
     width: 100%; 
-    flex: 1; /* Cho phép giãn ra trám khoảng trống */
-    min-height: 120px;
+    max-width: 320px; /* Gọn lại 1 chút để ko quá thô */
+    height: 100px; /* Thấp xuống ưu tiên cho Lịch */
     border: 1px solid var(--glass-border);
     border-radius: 12px;
 }
@@ -642,10 +641,8 @@ body {
 
 /* Stats */
 .stats-card {
-    padding: 1.2rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    padding: 0.8rem; /* Ép chung với habit */
+    flex-shrink: 0; /* Box này giữ nguyên kích thước để hiện đủ thống kê */
 }
 
 .stats-card h3 {
@@ -761,34 +758,13 @@ body {
         height: 10px; 
         font-size: 0.7rem; 
     }
-}
 
-/* TABLET FALLBACK: Giữa Điện thoại và PC to (ví dụ: Vuốt dọc màn hình đứng, hoặc Laptop nhỏ) */
-@media (max-width: 1200px) {
-    .app-container {
-        grid-template-columns: 6fr 4fr; /* Rút về 2 cột */
-        height: auto;
-        min-height: 90vh;
-    }
-    
-    .right-section {
-        grid-column: 1 / -1; /* Đẩy cột thống kê xuống hàng thứ 2 nằm ngang */
-    }
-}
-
-/* MOBILE FALLBACK: Ép xuống 1 cột */
 @media (max-width: 900px) {
     .app-container {
         grid-template-columns: 1fr;
         height: auto;
-        min-height: 95vh; 
+        min-height: 95vh;
         margin: 20px 0;
-    }
-    
-    .middle-section, .right-section {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
     }
 }
 
