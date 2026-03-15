@@ -749,11 +749,33 @@ body {
     .stat-icon { width: 28px; height: 28px; font-size: 0.9rem;}
     .stat-value { font-size: 0.9rem; }
     
-    /* Ép số và icon lịch nhỏ lại trên đt */
-    .solar-num { font-size: 0.9rem; padding: 1px 3px; }
-    .lunar-num { font-size: 0.65rem; }
-    .habit-icon-day { width: 8px; height: 8px; font-size: 0.5rem; }
-    .habit-icons-grid { gap: 2px; }
+    /* Ép số và icon lịch nhỏ lại trên đt và cấm tuyệt đối đè lên nhau */
+    .day-cell { 
+        padding: 4px; 
+    }
+    .solar-num { 
+        font-size: 0.85rem; 
+        padding: 0; 
+        background: transparent; 
+    }
+    .lunar-num { 
+        font-size: 0.6rem; 
+        margin-top: 1px;
+    }
+    .habit-icons-grid { 
+        position: relative; /* Gỡ bỏ lơ lửng */
+        bottom: 0;
+        left: 0;
+        margin-top: auto; /* Đẩy hết cỡ xuống dưới đáy */
+        gap: 2px;
+        max-width: 100%;
+        max-height: 50%;
+    }
+    .habit-icon-day { 
+        width: 8px; 
+        height: 8px; 
+        font-size: 0.55rem; 
+    }
 }
 
 @media (max-width: 900px) {
