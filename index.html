@@ -77,7 +77,8 @@
         </main>
 
         <!-- Sidebar / Action Section -->
-        <aside class="action-section">
+        <!-- Middle Section: Date, Habits, Notes -->
+        <aside class="middle-section">
             <div class="current-date-card glass-panel">
                 <div class="solar-date-display">
                     <span id="displayDayName" class="day-name">Thứ Hai</span>
@@ -104,12 +105,14 @@
                 </div>
             </div>
 
-            <!-- Box Ghi chú đưa lại về Cột bên phải (Sidebar) -->
-            <div class="notes-card glass-panel" style="margin-bottom: 0.8rem;">
+            <div class="notes-card glass-panel" style="margin-bottom: 0;">
                 <h3 data-i18n="notesTitle">Ghi chú</h3>
                 <textarea id="dailyNote" data-i18n-placeholder="notesPlaceholder" placeholder="Nhập ghi chú cho ngày này..."></textarea>
             </div>
+        </aside>
 
+        <!-- Right Section: Statistics -->
+        <aside class="right-section">
             <div class="stats-card glass-panel">
                 <h3 data-i18n="statsTitle">Thống Kê Tiến Độ</h3>
                 

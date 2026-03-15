@@ -53,11 +53,12 @@ body {
 
 .app-container {
     display: grid;
-    grid-template-columns: 7fr 3fr; 
+    /* KHUNG NHÌN MỚI: 3 CỘT trên màn hình máy tính rộng */
+    grid-template-columns: 5fr 3fr 3fr; 
     gap: 1.5rem; 
     width: 98%; 
-    max-width: 1200px; 
-    height: 90vh; /* Giảm để dứt điểm vụ tràn màn hình */
+    max-width: 1400px; /* Tăng max-width để cho phép màn hình to dàn ngang */
+    height: 90vh; 
     max-height: 900px; 
 }
 
@@ -599,11 +600,12 @@ body {
 }
 
 .notes-card {
-    padding: 0.5rem;
+    padding: 0.8rem;
     display: flex;
     flex-direction: column;
     width: 100%; 
-    height: 80px; /* Ép thấp xuống một chút để PC ko bị cuộn */
+    flex: 1; /* Cho phép giãn ra trám khoảng trống */
+    min-height: 120px;
     border: 1px solid var(--glass-border);
     border-radius: 12px;
 }
@@ -640,8 +642,10 @@ body {
 
 /* Stats */
 .stats-card {
-    padding: 0.6rem 0.8rem; /* Thu gọn padding trên dưới PC */
-    flex-shrink: 0; 
+    padding: 1.2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .stats-card h3 {
@@ -759,12 +763,32 @@ body {
     }
 }
 
+/* TABLET FALLBACK: Giữa Điện thoại và PC to (ví dụ: Vuốt dọc màn hình đứng, hoặc Laptop nhỏ) */
+@media (max-width: 1200px) {
+    .app-container {
+        grid-template-columns: 6fr 4fr; /* Rút về 2 cột */
+        height: auto;
+        min-height: 90vh;
+    }
+    
+    .right-section {
+        grid-column: 1 / -1; /* Đẩy cột thống kê xuống hàng thứ 2 nằm ngang */
+    }
+}
+
+/* MOBILE FALLBACK: Ép xuống 1 cột */
 @media (max-width: 900px) {
     .app-container {
         grid-template-columns: 1fr;
         height: auto;
         min-height: 95vh; 
         margin: 20px 0;
+    }
+    
+    .middle-section, .right-section {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
     }
 }
 
