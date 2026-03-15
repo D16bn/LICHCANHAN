@@ -316,14 +316,14 @@ body {
 }
 
 .habit-icon-day {
-    font-size: 1.2rem; /* Phóng to Icon */
+    font-size: 0.6rem; /* Thu nhỏ đúng bằng 1/4 diện tích */
     opacity: 0.95;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    filter: drop-shadow(0 0 4px rgba(0,0,0,0.6));
+    width: 10px;
+    height: 10px;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.4));
 }
 
 .note-indicator {
