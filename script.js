@@ -678,34 +678,32 @@ function handleAddNewActivity() {
 function getSmartActivityConfig(inputStr) {
     const text = inputStr.toLowerCase().trim();
     
-    // Default fallback
+    // Always use exactly what the user typed
     let nameVi = inputStr;
-    let nameEn = inputStr;
+    let nameEn = inputStr; // We leave it the same, if they want to translate they can use Settings
     let icon = 'fa-star';
     
-    // Mapping dictionary: [keywords], nameVi, nameEn, icon
+    // Mapping dictionary just for intelligent ICON assignment based on keywords
     const dict = [
-        { keys: ['chạy', 'run', 'jog'], vi: 'Chạy bộ', en: 'Running', icon: 'fa-person-running' },
-        { keys: ['bơi', 'swim'], vi: 'Bơi lội', en: 'Swimming', icon: 'fa-person-swimming' },
-        { keys: ['đọc', 'sách', 'read', 'book'], vi: 'Đọc sách', en: 'Reading', icon: 'fa-book' },
-        { keys: ['thiền', 'meditat'], vi: 'Thiền', en: 'Meditation', icon: 'fa-om' },
-        { keys: ['yoga'], vi: 'Yoga', en: 'Yoga', icon: 'fa-person-praying' },
-        { keys: ['tạ', 'gym', 'thể hình', 'đẩy', 'lift', 'weight'], vi: 'Tập Gym', en: 'Gym/Weights', icon: 'fa-dumbbell' },
-        { keys: ['đạp xe', 'xe đạp', 'bike', 'cycl'], vi: 'Đạp xe', en: 'Cycling', icon: 'fa-person-biking' },
-        { keys: ['nước', 'uống', 'water', 'drink'], vi: 'Uống nước', en: 'Drink Water', icon: 'fa-glass-water' },
-        { keys: ['ngủ', 'đi ngủ', 'giấc', 'sleep', 'bed'], vi: 'Ngủ đủ giấc', en: 'Sleep', icon: 'fa-bed' },
-        { keys: ['học', 'bài', 'study', 'learn'], vi: 'Học tập', en: 'Study', icon: 'fa-graduation-cap' },
-        { keys: ['code', 'lập trình', 'program'], vi: 'Lập trình', en: 'Coding', icon: 'fa-code' },
-        { keys: ['cầu lông', 'badminton'], vi: 'Cầu lông', en: 'Badminton', icon: 'fa-table-tennis-paddle-ball' },
-        { keys: ['bóng đá', 'đá banh', 'soccer', 'football'], vi: 'Bóng đá', en: 'Football', icon: 'fa-futbol' },
-        { keys: ['đi bộ', 'walk'], vi: 'Đi bộ', en: 'Walking', icon: 'fa-person-walking' },
-        { keys: ['nhảy', 'dance', 'khiêu vũ'], vi: 'Nhảy múa', en: 'Dancing', icon: 'fa-music' }
+        { keys: ['chạy', 'run', 'jog'], icon: 'fa-person-running' },
+        { keys: ['bơi', 'swim'], icon: 'fa-person-swimming' },
+        { keys: ['đọc', 'sách', 'read', 'book'], icon: 'fa-book' },
+        { keys: ['thiền', 'meditat'], icon: 'fa-om' },
+        { keys: ['yoga'], icon: 'fa-person-praying' },
+        { keys: ['tạ', 'gym', 'thể hình', 'đẩy', 'lift', 'weight'], icon: 'fa-dumbbell' },
+        { keys: ['đạp xe', 'xe đạp', 'bike', 'cycl'], icon: 'fa-person-biking' },
+        { keys: ['nước', 'uống', 'water', 'drink'], icon: 'fa-glass-water' },
+        { keys: ['ngủ', 'đi ngủ', 'giấc', 'sleep', 'bed'], icon: 'fa-bed' },
+        { keys: ['học', 'bài', 'study', 'learn'], icon: 'fa-graduation-cap' },
+        { keys: ['code', 'lập trình', 'program'], icon: 'fa-code' },
+        { keys: ['cầu lông', 'badminton'], icon: 'fa-table-tennis-paddle-ball' },
+        { keys: ['bóng đá', 'đá banh', 'soccer', 'football'], icon: 'fa-futbol' },
+        { keys: ['đi bộ', 'walk'], icon: 'fa-person-walking' },
+        { keys: ['nhảy', 'dance', 'khiêu vũ'], icon: 'fa-music' }
     ];
 
     for (let item of dict) {
         if (item.keys.some(k => text.includes(k))) {
-            nameVi = item.vi;
-            nameEn = item.en;
             icon = item.icon;
             break;
         }
