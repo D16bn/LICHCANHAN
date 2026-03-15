@@ -675,22 +675,62 @@ function handleAddNewActivity() {
     renderSettingsActivityList();
 }
 
+function getSmartActivityConfig(inputStr) {
+    const text = inputStr.toLowerCase().trim();
+    
+    // Default fallback
+    let nameVi = inputStr;
+    let nameEn = inputStr;
+    let icon = 'fa-star';
+    
+    // Mapping dictionary: [keywords], nameVi, nameEn, icon
+    const dict = [
+        { keys: ['chạy', 'run', 'jog'], vi: 'Chạy bộ', en: 'Running', icon: 'fa-person-running' },
+        { keys: ['bơi', 'swim'], vi: 'Bơi lội', en: 'Swimming', icon: 'fa-person-swimming' },
+        { keys: ['đọc', 'sách', 'read', 'book'], vi: 'Đọc sách', en: 'Reading', icon: 'fa-book' },
+        { keys: ['thiền', 'meditat'], vi: 'Thiền', en: 'Meditation', icon: 'fa-om' },
+        { keys: ['yoga'], vi: 'Yoga', en: 'Yoga', icon: 'fa-person-praying' },
+        { keys: ['tạ', 'gym', 'thể hình', 'đẩy', 'lift', 'weight'], vi: 'Tập Gym', en: 'Gym/Weights', icon: 'fa-dumbbell' },
+        { keys: ['đạp xe', 'xe đạp', 'bike', 'cycl'], vi: 'Đạp xe', en: 'Cycling', icon: 'fa-person-biking' },
+        { keys: ['nước', 'uống', 'water', 'drink'], vi: 'Uống nước', en: 'Drink Water', icon: 'fa-glass-water' },
+        { keys: ['ngủ', 'đi ngủ', 'giấc', 'sleep', 'bed'], vi: 'Ngủ đủ giấc', en: 'Sleep', icon: 'fa-bed' },
+        { keys: ['học', 'bài', 'study', 'learn'], vi: 'Học tập', en: 'Study', icon: 'fa-graduation-cap' },
+        { keys: ['code', 'lập trình', 'program'], vi: 'Lập trình', en: 'Coding', icon: 'fa-code' },
+        { keys: ['cầu lông', 'badminton'], vi: 'Cầu lông', en: 'Badminton', icon: 'fa-table-tennis-paddle-ball' },
+        { keys: ['bóng đá', 'đá banh', 'soccer', 'football'], vi: 'Bóng đá', en: 'Football', icon: 'fa-futbol' },
+        { keys: ['đi bộ', 'walk'], vi: 'Đi bộ', en: 'Walking', icon: 'fa-person-walking' },
+        { keys: ['nhảy', 'dance', 'khiêu vũ'], vi: 'Nhảy múa', en: 'Dancing', icon: 'fa-music' }
+    ];
+
+    for (let item of dict) {
+        if (item.keys.some(k => text.includes(k))) {
+            nameVi = item.vi;
+            nameEn = item.en;
+            icon = item.icon;
+            break;
+        }
+    }
+
+    return { nameVi, nameEn, icon };
+}
+
 function handleQuickAdd() {
-    const actName = quickAddInput.value.trim();
-    if (!actName) return;
+    const actNameInput = quickAddInput.value.trim();
+    if (!actNameInput) return;
     
     const newId = 'act_' + Date.now();
     const randomColors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#3b82f6', '#14b8a6', '#f43f5e', '#84cc16'];
     const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
-    const icons = ['fa-star', 'fa-bolt', 'fa-heart', 'fa-fire', 'fa-check', 'fa-droplet', 'fa-leaf'];
-    const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+    
+    // Smart resolve names & icon
+    const smartData = getSmartActivityConfig(actNameInput);
     
     activityConfig.push({
         id: newId,
-        nameVi: actName,
-        nameEn: actName,
+        nameVi: smartData.nameVi,
+        nameEn: smartData.nameEn,
         color: randomColor,
-        icon: randomIcon
+        icon: smartData.icon
     });
     
     quickAddInput.value = '';
