@@ -599,12 +599,11 @@ body {
 }
 
 .notes-card {
-    padding: 0.6rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
     width: 100%; 
-    max-width: 320px; /* Gọn lại 1 chút để ko quá thô */
-    height: 100px; /* Thấp xuống ưu tiên cho Lịch */
+    height: 80px; /* Ép thấp xuống một chút để PC ko bị cuộn */
     border: 1px solid var(--glass-border);
     border-radius: 12px;
 }
@@ -641,8 +640,8 @@ body {
 
 /* Stats */
 .stats-card {
-    padding: 0.8rem; /* Ép chung với habit */
-    flex-shrink: 0; /* Box này giữ nguyên kích thước để hiện đủ thống kê */
+    padding: 0.6rem 0.8rem; /* Thu gọn padding trên dưới PC */
+    flex-shrink: 0; 
 }
 
 .stats-card h3 {
@@ -758,12 +757,13 @@ body {
         height: 10px; 
         font-size: 0.7rem; 
     }
+}
 
 @media (max-width: 900px) {
     .app-container {
         grid-template-columns: 1fr;
         height: auto;
-        min-height: 95vh;
+        min-height: 95vh; 
         margin: 20px 0;
     }
 }
