@@ -212,6 +212,7 @@ function init() {
     });
     
 // Tab Listeners
+    const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             tabBtns.forEach(b => b.classList.remove('active'));
@@ -431,7 +432,13 @@ function renderCalendar() {
                 iconContainer.classList.add('habit-icon-day');
                 
                 const icon = document.createElement('i');
-                icon.className = `fa-solid ${act.icon}`;
+                // Support multiple icon classes appropriately
+                const iconClasses = act.icon.split(' ');
+                if (iconClasses.length > 1) {
+                    icon.classList.add(...iconClasses);
+                } else {
+                    icon.classList.add('fa-solid', act.icon);
+                }
                 icon.style.color = act.color;
                 
                 iconContainer.appendChild(icon);
