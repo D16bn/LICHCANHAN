@@ -53,11 +53,12 @@ body {
 
 .app-container {
     display: grid;
+    /* KHUNG NHÌN MỚI: 2 CỘT QUAY LẠI, NOTE BÊN DƯỚI LỊCH */
     grid-template-columns: 7fr 3fr; 
     gap: 1.5rem; 
     width: 98%; 
-    max-width: 1200px; 
-    height: 90vh; /* Giảm để dứt điểm vụ tràn màn hình */
+    max-width: 1400px; /* Tăng max-width để cho phép màn hình to dàn ngang */
+    height: 90vh; 
     max-height: 900px; 
 }
 
@@ -599,12 +600,11 @@ body {
 }
 
 .notes-card {
-    padding: 0.6rem;
+    padding: 0.8rem;
     display: flex;
     flex-direction: column;
     width: 100%; 
-    max-width: 320px; /* Gọn lại 1 chút để ko quá thô */
-    height: 100px; /* Thấp xuống ưu tiên cho Lịch */
+    height: 120px; /* Cố định chiều cao cho Ghi chú dưới Lịch */
     border: 1px solid var(--glass-border);
     border-radius: 12px;
 }
@@ -641,8 +641,10 @@ body {
 
 /* Stats */
 .stats-card {
-    padding: 0.8rem; /* Ép chung với habit */
-    flex-shrink: 0; /* Box này giữ nguyên kích thước để hiện đủ thống kê */
+    padding: 1.2rem;
+    flex: 1; /* Giãn phần thống kê trám khoảng trống bên phải */
+    display: flex;
+    flex-direction: column;
 }
 
 .stats-card h3 {
@@ -758,12 +760,24 @@ body {
         height: 10px; 
         font-size: 0.7rem; 
     }
+}
 
+/* TABLET FALLBACK */
+@media (max-width: 1000px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 95vh; 
+        margin: 20px 0;
+    }
+}
+
+/* MOBILE FALLBACK: Ép xuống 1 cột */
 @media (max-width: 900px) {
     .app-container {
         grid-template-columns: 1fr;
         height: auto;
-        min-height: 95vh;
+        min-height: 95vh; 
         margin: 20px 0;
     }
 }
