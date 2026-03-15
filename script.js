@@ -675,37 +675,65 @@ function handleAddNewActivity() {
     renderSettingsActivityList();
 }
 
-function getSmartActivityConfig(inputStr) {
-    const text = inputStr.toLowerCase().trim();
+function getSmartActivityConfig(inputStr, lang) {
+    const text = inputStr.trim();
+    const textLower = text.toLowerCase();
     
-    // Always use exactly what the user typed
-    let nameVi = inputStr;
-    let nameEn = inputStr; // We leave it the same, if they want to translate they can use Settings
+    // Always start by assuming the user's input is valid for both languages
+    let nameVi = text;
+    let nameEn = text; 
     let icon = 'fa-star';
     
-    // Mapping dictionary just for intelligent ICON assignment based on keywords
+    // Mapping dictionary for intelligent ICON and exact translation assignment
     const dict = [
-        { keys: ['chạy', 'run', 'jog'], icon: 'fa-person-running' },
-        { keys: ['bơi', 'swim'], icon: 'fa-person-swimming' },
-        { keys: ['đọc', 'sách', 'read', 'book'], icon: 'fa-book' },
-        { keys: ['thiền', 'meditat'], icon: 'fa-om' },
-        { keys: ['yoga'], icon: 'fa-person-praying' },
-        { keys: ['tạ', 'gym', 'thể hình', 'đẩy', 'lift', 'weight'], icon: 'fa-dumbbell' },
-        { keys: ['đạp xe', 'xe đạp', 'bike', 'cycl'], icon: 'fa-person-biking' },
-        { keys: ['nước', 'uống', 'water', 'drink'], icon: 'fa-glass-water' },
-        { keys: ['ngủ', 'đi ngủ', 'giấc', 'sleep', 'bed'], icon: 'fa-bed' },
-        { keys: ['học', 'bài', 'study', 'learn'], icon: 'fa-graduation-cap' },
-        { keys: ['code', 'lập trình', 'program'], icon: 'fa-code' },
-        { keys: ['cầu lông', 'badminton'], icon: 'fa-table-tennis-paddle-ball' },
-        { keys: ['bóng đá', 'đá banh', 'soccer', 'football'], icon: 'fa-futbol' },
-        { keys: ['đi bộ', 'walk'], icon: 'fa-person-walking' },
-        { keys: ['nhảy', 'dance', 'khiêu vũ'], icon: 'fa-music' }
+        { keys: ['chạy', 'run', 'jog'], vi: 'Chạy bộ', en: 'Running', icon: 'fa-person-running' },
+        { keys: ['bơi', 'swim'], vi: 'Bơi', en: 'Swimming', icon: 'fa-person-swimming' },
+        { keys: ['đọc', 'sách', 'read', 'book'], vi: 'Đọc sách', en: 'Reading', icon: 'fa-book' },
+        { keys: ['thiền', 'meditat'], vi: 'Thiền', en: 'Meditation', icon: 'fa-om' },
+        { keys: ['yoga'], vi: 'Yoga', en: 'Yoga', icon: 'fa-person-praying' },
+        { keys: ['tạ', 'gym', 'thể hình', 'đẩy', 'lift', 'weight'], vi: 'Tập Gym', en: 'Gym', icon: 'fa-dumbbell' },
+        { keys: ['đạp xe', 'xe đạp', 'bike', 'cycl'], vi: 'Đạp xe', en: 'Cycling', icon: 'fa-person-biking' },
+        { keys: ['nước', 'uống', 'water', 'drink'], vi: 'Uống nước', en: 'Drink Water', icon: 'fa-glass-water' },
+        { keys: ['ngủ', 'đi ngủ', 'giấc', 'sleep', 'bed'], vi: 'Ngủ đủ giấc', en: 'Sleep', icon: 'fa-bed' },
+        { keys: ['học', 'bài', 'study', 'learn'], vi: 'Học tập', en: 'Study', icon: 'fa-graduation-cap' },
+        { keys: ['code', 'lập trình', 'program'], vi: 'Lập trình', en: 'Coding', icon: 'fa-code' },
+        { keys: ['cầu lông', 'badminton'], vi: 'Cầu lông', en: 'Badminton', icon: 'fa-table-tennis-paddle-ball' },
+        { keys: ['bóng đá', 'đá banh', 'soccer', 'football'], vi: 'Bóng đá', en: 'Football', icon: 'fa-futbol' },
+        { keys: ['đi bộ', 'walk'], vi: 'Đi bộ', en: 'Walking', icon: 'fa-person-walking' },
+        { keys: ['nhảy', 'dance', 'khiêu vũ'], vi: 'Nhảy múa', en: 'Dancing', icon: 'fa-music' },
+        { keys: ['thuốc', 'pill', 'medic'], vi: 'Uống thuốc', en: 'Medication', icon: 'fa-pills' },
+        { keys: ['ăn', 'eat', 'meal', 'bữa'], vi: 'Ăn uống', en: 'Eat Meal', icon: 'fa-utensils' }
     ];
 
+    let foundExactMatch = false;
+
+    // Check if the user's input exactly or almost exactly matches one of our dictionary keywords
     for (let item of dict) {
-        if (item.keys.some(k => text.includes(k))) {
+        // Find if any key matches exact (allow for minor typing diff like 'chạy bộ' vs 'chạy')
+        const isMatch = item.keys.some(k => textLower === k || textLower === item.vi.toLowerCase() || textLower === item.en.toLowerCase());
+        
+        if (isMatch) {
+            // If it's a known exact activity, we apply the translation properly
+            if (lang === 'vi') {
+                nameVi = text; // Keep exact user casing for their primary language
+                nameEn = item.en; // Translate the other
+            } else {
+                nameEn = text; // Keep exact user casing for their primary language
+                nameVi = item.vi; // Translate the other
+            }
             icon = item.icon;
+            foundExactMatch = true;
             break;
+        }
+    }
+    
+    // If not an EXACT match, just search for keywords to grant the Icon, but don't assume we know how to translate complex sentences
+    if (!foundExactMatch) {
+        for (let item of dict) {
+            if (item.keys.some(k => textLower.includes(k))) {
+                icon = item.icon; // Just grant the icon
+                break;
+            }
         }
     }
 
@@ -717,11 +745,11 @@ function handleQuickAdd() {
     if (!actNameInput) return;
     
     const newId = 'act_' + Date.now();
-    const randomColors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#3b82f6', '#14b8a6', '#f43f5e', '#84cc16'];
+    const randomColors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#3b82f6', '#14b8a6', '#f43f5e', '#84cc16', '#ec4899', '#06b6d4'];
     const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
     
-    // Smart resolve names & icon
-    const smartData = getSmartActivityConfig(actNameInput);
+    // Smart resolve names & icon by passing the CURRENT APP LANGUAGE
+    const smartData = getSmartActivityConfig(actNameInput, currentLang);
     
     activityConfig.push({
         id: newId,
