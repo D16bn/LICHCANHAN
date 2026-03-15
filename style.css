@@ -292,6 +292,11 @@ body {
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1;
+    position: relative; /* Kéo số nhà lên trên cùng bảng */
+    z-index: 10;
+    background: rgba(30, 41, 59, 0.8); /* Nền mờ giúp tách biệt số ngày nếu có icon lọt vào */
+    padding: 2px 4px; /* Tránh đứt đuôi số */
+    border-radius: 4px;
 }
 
 .lunar-num {
@@ -303,15 +308,16 @@ body {
 
 .habit-icons-grid {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 5px; /* Sát cạnh dưới */
+    left: 5px; /* Sát cạnh trái */
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    justify-content: center;
-    align-items: center;
-    width: 80%;
+    justify-content: flex-start; /* Nhờ trái */
+    align-items: flex-end; /* Dồn xuống dưới */
+    max-width: 65%; /* Chiếm tối đa 65% bề ngang để ko đụng số ngày ở góc phải */
+    max-height: 50%; /* Không bao giờ trồi lên quá nửa ô vuông */
+    overflow: hidden; /* Cắt bớt nếu quá nhiều icon để bảo vệ số */
     pointer-events: none; /* Let clicks pass through to the cell */
 }
 
