@@ -301,25 +301,26 @@ body {
     line-height: 1;
 }
 
-.habit-dots {
+.habit-icons-grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 4px;
-    margin-top: 10px; 
+    margin-top: auto;
     align-self: flex-start;
+    width: 100%;
+    padding-top: 4px;
 }
 
-.dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    opacity: 0.3;
+.habit-icon-day {
+    font-size: 0.85rem;
+    opacity: 0.95;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
 }
-
-.dot.active { opacity: 1; }
-
-.dot.thien { background-color: var(--thien-color); box-shadow: 0 0 5px var(--thien-color); }
-.dot.yoga { background-color: var(--yoga-color); box-shadow: 0 0 5px var(--yoga-color); }
-.dot.pushup { background-color: var(--pushup-color); box-shadow: 0 0 5px var(--pushup-color); }
 
 .note-indicator {
     position: absolute;
@@ -425,7 +426,83 @@ body {
     gap: 0.5rem; /* Giảm gap giữa các thói quen cực mạnh */
 }
 
+.quick-add-habit {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 0.8rem;
+    align-items: center;
+}
+
+.quick-add-input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.quick-add-input:focus {
+    border-color: var(--primary);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.quick-add-btn, .quick-edit-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: white;
+}
+
+.quick-add-btn { background: var(--primary); }
+.quick-add-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+
+.quick-edit-btn { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); }
+.quick-edit-btn:hover { background: rgba(255, 255, 255, 0.2); color: white; }
+
+.habit-item-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-delete-act-btn {
+    display: none;
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: none;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.quick-delete-act-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.habit-list.edit-mode ~ .habit-item-container .quick-delete-act-btn,
+.habit-list.edit-mode .quick-delete-act-btn {
+    display: flex;
+}
+
 .habit-item {
+    flex: 1;
     display: flex;
     align-items: center;
     background: rgba(255, 255, 255, 0.03);

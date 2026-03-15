@@ -34,7 +34,8 @@ const i18n = {
         dayNamesFull: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
         settingsTitle: "Cài đặt Hoạt động",
         settingsWarning: "* Lưu ý: Đổi tên / Xóa hoạt động cũ có thể làm lệch dữ liệu thống kê cũ.",
-        saveBtn: "Lưu & Áp Dụng"
+        saveBtn: "Lưu & Áp Dụng",
+        quickAddPlaceholder: "Thêm hoạt động..."
     },
     en: {
         title: "Personal Training Calendar",
@@ -53,7 +54,8 @@ const i18n = {
         dayNamesFull: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         settingsTitle: "Activity Settings",
         settingsWarning: "* Note: Renaming or deleting old activities might affect previous statistics.",
-        saveBtn: "Save & Apply"
+        saveBtn: "Save & Apply",
+        quickAddPlaceholder: "Add habit..."
     }
 };
 
@@ -82,6 +84,11 @@ const activityListEl = document.getElementById('activityList');
 const dynamicHabitList = document.getElementById('dynamicHabitList');
 const dynamicStatsGrid = document.getElementById('dynamicStatsGrid');
 const weekdaysGrid = document.getElementById('weekdaysGrid');
+
+// Quick Add / Quick Edit Elements
+const quickAddInput = document.getElementById('quickAddInput');
+const btnQuickAdd = document.getElementById('btnQuickAdd');
+const btnToggleEdit = document.getElementById('btnToggleEdit');
 
 // --------------------------------------------------------------------
 // FIREBASE CONFIGURATION (Lấy từ User)
@@ -162,6 +169,27 @@ function init() {
             renderCalendar(); // Ép render lịch ngay lập tức để hiện Dấu Chấm
             updateStats(document.querySelector('.tab-btn.active').dataset.range); // Ép update thống kê
         }
+    });
+
+    // Delegated Quick Delete Event cho Dynamic Habit List
+    dynamicHabitList.addEventListener('click', (e) => {
+        let btn = e.target.closest('.quick-delete-act-btn');
+        if (btn) {
+            const actId = btn.dataset.id;
+            if(confirm(currentLang === 'vi' ? 'Bạn có chắc muốn xóa hoạt động này?' : 'Are you sure you want to delete this habit?')) {
+                activityConfig = activityConfig.filter(a => a.id !== actId);
+                saveConfigToCloud();
+            }
+        }
+    });
+
+    // Quick Add Listeners
+    if(btnQuickAdd) btnQuickAdd.addEventListener('click', handleQuickAdd);
+    if(quickAddInput) quickAddInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') handleQuickAdd();
+    });
+    if(btnToggleEdit) btnToggleEdit.addEventListener('click', () => {
+        dynamicHabitList.classList.toggle('edit-mode');
     });
 
 // Note Listener
@@ -272,14 +300,17 @@ function renderDynamicLayout() {
     dynamicHabitList.innerHTML = '';
     activityConfig.forEach(act => {
         const hHTML = `
-            <label class="habit-item">
-                <input type="checkbox" data-id="${act.id}" value="${act.id}">
-                <span class="checkmark" style="border-color: ${act.color}"></span>
-                <div class="habit-info">
-                    <i class="fa-solid ${act.icon} habit-icon" style="color: ${act.color}"></i>
-                    <span>${act[langIdx]}</span>
-                </div>
-            </label>
+            <div class="habit-item-container">
+                <label class="habit-item">
+                    <input type="checkbox" data-id="${act.id}" value="${act.id}">
+                    <span class="checkmark" style="border-color: ${act.color}"></span>
+                    <div class="habit-info">
+                        <i class="fa-solid ${act.icon} habit-icon" style="color: ${act.color}"></i>
+                        <span>${act[langIdx]}</span>
+                    </div>
+                </label>
+                <button class="quick-delete-act-btn" data-id="${act.id}" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+            </div>
         `;
         dynamicHabitList.innerHTML += hHTML;
     });
@@ -388,19 +419,23 @@ function renderCalendar() {
         const lunarStr = getLunarInfo(year, month + 1, i);
         lunarSpan.textContent = lunarStr;
         
-        // Dynamic Habit Dots
-        const dotsDiv = document.createElement('div');
-        dotsDiv.classList.add('habit-dots');
+        // Dynamic Habit Icons
+        const iconsDiv = document.createElement('div');
+        iconsDiv.classList.add('habit-icons-grid');
         
         const dayData = habitData[cellDateStr] || {};
         
         activityConfig.forEach(act => {
             if (dayData[act.id]) {
-                const dot = document.createElement('div');
-                dot.classList.add('dot', 'active');
-                dot.style.backgroundColor = act.color;
-                dot.style.boxShadow = `0 0 5px ${act.color}`;
-                dotsDiv.appendChild(dot);
+                const iconContainer = document.createElement('div');
+                iconContainer.classList.add('habit-icon-day');
+                
+                const icon = document.createElement('i');
+                icon.className = `fa-solid ${act.icon}`;
+                icon.style.color = act.color;
+                
+                iconContainer.appendChild(icon);
+                iconsDiv.appendChild(iconContainer);
             }
         });
         
@@ -413,7 +448,7 @@ function renderCalendar() {
         
         cell.appendChild(solarSpan);
         cell.appendChild(lunarSpan);
-        cell.appendChild(dotsDiv);
+        cell.appendChild(iconsDiv);
         
         cell.addEventListener('click', () => {
             selectedDate = new Date(year, month, i);
@@ -631,6 +666,28 @@ function handleAddNewActivity() {
     document.getElementById('newActEn').value = '';
     
     renderSettingsActivityList();
+}
+
+function handleQuickAdd() {
+    const actName = quickAddInput.value.trim();
+    if (!actName) return;
+    
+    const newId = 'act_' + Date.now();
+    const randomColors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#3b82f6', '#14b8a6', '#f43f5e', '#84cc16'];
+    const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
+    const icons = ['fa-star', 'fa-bolt', 'fa-heart', 'fa-fire', 'fa-check', 'fa-droplet', 'fa-leaf'];
+    const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+    
+    activityConfig.push({
+        id: newId,
+        nameVi: actName,
+        nameEn: actName,
+        color: randomColor,
+        icon: randomIcon
+    });
+    
+    quickAddInput.value = '';
+    saveConfigToCloud();
 }
 
 function saveConfigToCloud() {
