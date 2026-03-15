@@ -302,24 +302,28 @@ body {
 }
 
 .habit-icons-grid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-top: auto;
-    align-self: flex-start;
-    width: 100%;
-    padding-top: 4px;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    pointer-events: none; /* Let clicks pass through to the cell */
 }
 
 .habit-icon-day {
-    font-size: 0.85rem;
+    font-size: 1.2rem; /* Phóng to Icon */
     opacity: 0.95;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.6));
 }
 
 .note-indicator {
