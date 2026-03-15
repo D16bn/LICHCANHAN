@@ -337,9 +337,9 @@ function renderCalendar() {
             cell.appendChild(noteIcon);
         }
         
-        cell.appendChild(dotsDiv);
         cell.appendChild(solarSpan);
         cell.appendChild(lunarSpan);
+        cell.appendChild(dotsDiv);
         
         cell.addEventListener('click', () => {
             selectedDate = new Date(year, month, i);

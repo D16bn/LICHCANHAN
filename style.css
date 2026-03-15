@@ -232,7 +232,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-end; /* Nội dung dồn lề phải */
-    justify-content: space-between; /* GIẢI QUYẾT KHOẢNG TRẮNG ĐÁY: Ép nút nội dung lên đỉnh và xuống kịch đáy */
+    justify-content: flex-start; /* GIẢI QUYẾT KHOẢNG TRẮNG ĐÁY: Dồn chữ lên trên */
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
@@ -278,20 +278,22 @@ body {
 }
 
 .solar-num {
-    font-size: 1.25rem; /* Trả lại số ngày to, dễ nhìn */
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1;
 }
 
 .lunar-num {
-    font-size: 0.8rem; /* Tăng nhẹ font âm lịch */
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-top: 4px;
+    margin-top: 3px;
+    line-height: 1;
 }
 
 .habit-dots {
     display: flex;
     gap: 4px;
-    margin-top: 8px;
+    margin-top: auto; 
     align-self: flex-start;
 }
 
@@ -310,8 +312,8 @@ body {
 
 .note-indicator {
     position: absolute;
-    bottom: 5px;
-    left: 5px;
+    top: 6px;
+    left: 6px;
     font-size: 0.65rem;
     color: var(--text-secondary);
     opacity: 0.8;
@@ -652,6 +654,7 @@ body {
         height: auto;
         min-height: 95vh;
         margin: 20px 0;
+    }
 }
 
 /* FIX RESPONSIVE MOBILE: Hiển thị lại nút Hôm nay và Nhập Ngày */
