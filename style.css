@@ -723,53 +723,41 @@ body {
     font-weight: 700;
 }
 
-/* Ép cực mạnh cho màn hình lùn dưới 700px chiều cao */
-@media (max-height: 700px) {
-    .current-date-card { padding: 0.5rem; }
-    .date-num { font-size: 1.8rem; margin: 0; }
-    .day-name { font-size: 0.9rem; }
-    .month-year { font-size: 0.8rem; }
-    .lunar-date-display { margin-top: 0.2rem; padding-top: 0.2rem; }
-    
-    .habits-card { padding: 0.5rem; }
-    .habits-card h3 { font-size: 1rem; margin-bottom: 0; }
-    .subtitle { margin-bottom: 0.4rem; font-size: 0.75rem;}
-    .habit-item { padding: 0.3rem 0.5rem; }
-    .habit-list { gap: 0.3rem; }
-    
-    .stats-card { padding: 0.5rem; }
-    .stats-card h3 { font-size: 1rem; margin-bottom: 0.2rem;}
-    .tabs { margin-bottom: 0.4rem; }
-    .tab-btn { padding: 2px 0; font-size: 0.8rem;}
-    .stats-grid { gap: 0.3rem; }
-    .stat-item { padding: 0.3rem 0.5rem; }
-    .stat-icon { width: 28px; height: 28px; font-size: 0.9rem;}
-    .stat-value { font-size: 0.9rem; }
-    
     /* Ép số và icon lịch nhỏ lại trên đt và cấm tuyệt đối đè lên nhau bằng Flexbox */
+    .calendar-grid {
+        min-height: 480px; /* Đảm bảo cả khối lịch đủ cao để chứa 6 hàng */
+    }
+    
     .day-cell { 
         padding: 4px; 
-        min-height: 50px; /* Force minimum height so there is always room */
+        min-height: 80px; /* GIẢI PHÁP TỐI THƯỢNG: ÉP MỖI Ô CAO ÍT NHẤT 80px TRÊN ĐIỆN THOẠI */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
+    
     .solar-num { 
-        font-size: 0.85rem; 
+        font-size: 0.9rem; 
         padding: 0; 
         background: transparent; 
+        align-self: flex-end; /* Đẩy góc phải */
     }
     .lunar-num { 
-        font-size: 0.6rem; 
-        margin-top: 1px;
+        font-size: 0.65rem; 
+        margin-top: 2px;
+        align-self: flex-end; /* Đẩy góc phải */
     }
     .habit-icons-grid { 
-        gap: 2px;
-        margin-top: 4px; /* Push icons slightly down from the numbers */
+        gap: 3px;
+        margin-top: auto; /* Đẩy xuống đáy ô chữ nhật kéo dài */
+        justify-content: flex-start;
+        width: 100%;
     }
     .habit-icon-day { 
-        width: 8px; 
-        height: 8px; 
-        font-size: 0.55rem; 
+        width: 10px; 
+        height: 10px; 
+        font-size: 0.7rem; 
     }
-}
 
 @media (max-width: 900px) {
     .app-container {
