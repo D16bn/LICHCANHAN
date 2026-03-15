@@ -593,7 +593,6 @@ body {
 /* Notes in Calendar Footer */
 .calendar-footer {
     display: flex;
-    justify-content: flex-end; /* Nằm góc phải */
     margin-top: 10px; /* Thít chặt lại */
     margin-right: 5px;
     margin-bottom: 5px;
