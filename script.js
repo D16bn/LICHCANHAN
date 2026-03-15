@@ -192,23 +192,64 @@ function init() {
         dynamicHabitList.classList.toggle('edit-mode');
     });
 
-// Note Listener
+// Note Listener with Debounce and Auto-Translation
+    let noteTimeout;
     const dailyNote = document.getElementById('dailyNote');
     dailyNote.addEventListener('input', (e) => {
+        clearTimeout(noteTimeout);
         const dateStr = formatDate(selectedDate);
         if (!habitData[dateStr]) {
-            habitData[dateStr] = { note: '' };
-        }
-        habitData[dateStr].note = e.target.value;
-        
-        // Clean up
-        if (checkIfEmptyData(habitData[dateStr])) {
-            delete habitData[dateStr]; 
+            habitData[dateStr] = { note_vi: '', note_en: '' };
         }
         
-        // Push object Lên Firebase (thay thế LocalStorage)
-        database.ref('habitTrackerData').set(habitData);
-        // Lưu ý: Không cần gọi renderCalendar() ở đây nữa vì sự kiện 'value' từ Firebase sẽ tự động fire và gọi hàm đó!
+        // Save to current active language slot immediately
+        const text = e.target.value;
+        if (currentLang === 'vi') {
+            habitData[dateStr].note_vi = text;
+        } else {
+            habitData[dateStr].note_en = text;
+        }
+
+        // Wait 1.5 seconds after they stop typing before auto-translating to the OTHER language
+        noteTimeout = setTimeout(async () => {
+            if (text.trim() === '') {
+                habitData[dateStr].note_vi = '';
+                habitData[dateStr].note_en = '';
+            } else {
+                try {
+                    const sourceLang = currentLang;
+                    const targetLang = currentLang === 'vi' ? 'en' : 'vi';
+                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURI(text)}`;
+                    
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    let translatedText = '';
+                    
+                    if (data && data[0]) {
+                        data[0].forEach(item => {
+                            if (item[0]) translatedText += item[0];
+                        });
+                    }
+
+                    if (targetLang === 'vi') {
+                        habitData[dateStr].note_vi = translatedText;
+                    } else {
+                        habitData[dateStr].note_en = translatedText;
+                    }
+                } catch (err) {
+                    console.error("Translation error:", err);
+                    // Fallback to putting the same text if translation fails
+                    if (currentLang === 'vi') habitData[dateStr].note_en = text;
+                    else habitData[dateStr].note_vi = text;
+                }
+            }
+
+            // Clean up empty days
+            if (checkIfEmptyData(habitData[dateStr])) {
+                delete habitData[dateStr]; 
+            }
+            database.ref('habitTrackerData').set(habitData);
+        }, 1500); 
     });
     
 // Tab Listeners
@@ -247,8 +288,8 @@ function init() {
 function checkIfEmptyData(dayData) {
     let isEmpty = true;
     for (const key in dayData) {
-        if (key === 'note' && dayData.note.trim() !== '') isEmpty = false;
-        if (key !== 'note' && dayData[key] === true) isEmpty = false;
+        if ((key === 'note_vi' || key === 'note_en') && dayData[key] && dayData[key].trim() !== '') isEmpty = false;
+        if (key !== 'note_vi' && key !== 'note_en' && dayData[key] === true) isEmpty = false;
     }
     return isEmpty;
 }
@@ -256,15 +297,48 @@ function checkIfEmptyData(dayData) {
 function switchLanguage(lang) {
     if (lang === currentLang) return;
     currentLang = lang;
-    localStorage.setItem('calendarLang', lang);
-    applyLanguage(lang);
     
-    flagIcon.src = lang === 'vi' ? 'https://flagcdn.com/w40/vn.png' : 'https://flagcdn.com/w40/gb.png';
-    flagIcon.alt = lang.toUpperCase();
+    // Update local storage
+    localStorage.setItem('prefLang', lang);
     
-    renderDynamicLayout();
+    // Update UI Elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = i18n[lang][key];
+            } else {
+                el.textContent = i18n[lang][key];
+            }
+        }
+    });
+
+    // Update Flag Icon
+    if (lang === 'vi') {
+        flagIcon.src = 'https://flagcdn.com/w40/vn.png';
+        flagIcon.alt = 'VN';
+    } else {
+        flagIcon.src = 'https://flagcdn.com/w40/us.png';
+        flagIcon.alt = 'EN';
+    }
+    
+    // Update note content specifically on language switch
+    const dateStr = formatDate(selectedDate);
+    const dayData = habitData[dateStr] || {};
+    const dailyNote = document.getElementById('dailyNote');
+    
+    if (lang === 'vi') {
+        dailyNote.value = dayData.note_vi || dayData.note || ''; 
+    } else {
+        dailyNote.value = dayData.note_en || dayData.note || '';
+    }
+    
+    // Update dependent components
     renderCalendar();
     updateDetailPanel(selectedDate);
+    renderSettingsActivityList();
+    const activeTab = document.querySelector('.tab-btn.active');
+    if(activeTab) updateStats(activeTab.dataset.range);
 }
 
 function applyLanguage(lang) {
@@ -447,7 +521,8 @@ function renderCalendar() {
         });
         
         // Note Indicator
-        if (dayData.note && dayData.note.trim() !== '') {
+        const hasNote = dayData.note_vi?.trim() || dayData.note_en?.trim() || dayData.note?.trim();
+        if (hasNote) {
             const noteIcon = document.createElement('i');
             noteIcon.classList.add('fa-solid', 'fa-pen', 'note-indicator');
             cell.appendChild(noteIcon);
@@ -521,7 +596,13 @@ function updateDetailPanel(date) {
     });
     
     const dailyNote = document.getElementById('dailyNote');
-    dailyNote.value = dayData.note || '';
+    
+    // Display note based on current language
+    if (currentLang === 'vi') {
+        dailyNote.value = dayData.note_vi || dayData.note || ''; 
+    } else {
+        dailyNote.value = dayData.note_en || dayData.note || '';
+    }
 }
 
 // Handle Dynamic Checkbox Changes
