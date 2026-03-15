@@ -176,7 +176,7 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 9999;
+    z-index: 10000; /* Cố định với z-index cao nhất để luôn đè lên lịch */
     display: flex;
     gap: 15px;
     align-items: center;
