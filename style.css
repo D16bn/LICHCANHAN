@@ -173,10 +173,10 @@ body {
 }
 
 .top-right-controls {
-    position: fixed;
+    position: absolute; /* Đã đổi từ fixed sang absolute để trôi theo cuộn trang */
     top: 20px;
     right: 20px;
-    z-index: 10000; /* Cố định với z-index cao nhất để luôn đè lên lịch */
+    z-index: 10000;
     display: flex;
     gap: 15px;
     align-items: center;
