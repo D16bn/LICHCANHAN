@@ -12,10 +12,43 @@
 <body>
     <div class="app-background"></div>
     
-    <!-- Cờ chọn ngôn ngữ nằm hoàn toàn độc lập, tách ra khỏi header Lịch -->
-    <button id="btnLangToggle" class="lang-toggle-btn active" title="Đổi Ngôn Ngữ / Switch Language">
-        <img id="flagIcon" src="https://flagcdn.com/w40/vn.png" alt="VN">
-    </button>
+    <!-- Nút Cài đặt và Đổi ngôn ngữ ở góc phải -->
+    <div class="top-right-controls">
+        <button id="btnSettings" class="icon-btn setting-btn" title="Quản lý Hoạt động / Manager Activities">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+        <button id="btnLangToggle" class="lang-toggle-btn active" title="Đổi Ngôn Ngữ / Switch Language">
+            <img id="flagIcon" src="https://flagcdn.com/w40/vn.png" alt="VN">
+        </button>
+    </div>
+
+    <!-- Modal Cài đặt Hoạt động -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2 data-i18n="settingsTitle">Cài đặt Hoạt động</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="add-activity-form">
+                    <input type="text" id="newActVi" placeholder="Tên (Tiếng Việt)" class="input-field">
+                    <input type="text" id="newActEn" placeholder="Name (English)" class="input-field">
+                    <input type="color" id="newActColor" value="#6366f1" class="color-picker" title="Chọn màu">
+                    <button id="btnAddActivity" class="primary-btn"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                
+                <div id="activityList" class="settings-activity-list">
+                    <!-- Javascript sinh danh sách -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <p class="warning-text" data-i18n="settingsWarning">* Lưu ý: Xóa hoạt động cũ có thể làm mất dữ liệu đã đánh dấu của môn đó.</p>
+                <button id="btnSaveConfig" class="primary-btn wide-btn" data-i18n="saveBtn">Lưu & Áp Dụng</button>
+            </div>
+        </div>
+    </div>
     
     <div class="app-container">
         <!-- Calendar Section -->
@@ -35,8 +68,8 @@
                 </div>
             </header>
             
-            <div class="weekdays">
-                <div>CN</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div>
+            <div class="weekdays" id="weekdaysGrid">
+                <!-- Javascript sinh thứ -->
             </div>
             
             <div id="calendarGrid" class="calendar-grid">
@@ -69,33 +102,8 @@
                 <h3 data-i18n="habitsTitle">Thói Quen Mỗi Ngày</h3>
                 <p class="subtitle" data-i18n="habitsSub">Đánh dấu khi bạn hoàn thành</p>
                 
-                <div class="habit-list">
-                    <label class="habit-item">
-                        <input type="checkbox" id="checkThien" value="thien">
-                        <span class="checkmark"></span>
-                        <div class="habit-info">
-                            <i class="fa-solid fa-om habit-icon"></i>
-                            <span data-i18n="habitThien">Thiền</span>
-                        </div>
-                    </label>
-
-                    <label class="habit-item">
-                        <input type="checkbox" id="checkYoga" value="yoga">
-                        <span class="checkmark"></span>
-                        <div class="habit-info">
-                            <i class="fa-solid fa-person-praying habit-icon"></i>
-                            <span data-i18n="habitYoga">Yoga</span>
-                        </div>
-                    </label>
-
-                    <label class="habit-item">
-                        <input type="checkbox" id="checkPushup" value="pushup">
-                        <span class="checkmark"></span>
-                        <div class="habit-info">
-                            <i class="fa-solid fa-dumbbell habit-icon"></i>
-                            <span data-i18n="habitPushup">Push up</span>
-                        </div>
-                    </label>
+                <div class="habit-list" id="dynamicHabitList">
+                    <!-- JS Tự động sinh danh sách Checkbox Động -->
                 </div>
             </div>
 
@@ -108,28 +116,8 @@
                     <button class="tab-btn" data-range="year" data-i18n="tabYear">Năm</button>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-icon thien-color"><i class="fa-solid fa-om"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-label" data-i18n="statThien">Thiền</span>
-                            <span class="stat-value" id="statThien">0</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon yoga-color"><i class="fa-solid fa-person-praying"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-label" data-i18n="statYoga">Yoga</span>
-                            <span class="stat-value" id="statYoga">0</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon pushup-color"><i class="fa-solid fa-dumbbell"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-label" data-i18n="statPushup">Push up</span>
-                            <span class="stat-value" id="statPushup">0</span>
-                        </div>
-                    </div>
+                <div class="stats-grid" id="dynamicStatsGrid">
+                    <!-- JS Tự động sinh danh sách Thống kê Động -->
                 </div>
             </div>
         </aside>

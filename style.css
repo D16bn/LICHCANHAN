@@ -172,6 +172,23 @@ body {
     cursor: pointer;
 }
 
+.top-right-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.setting-btn {
+    width: 38px;
+    height: 38px;
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+}
+
 .lang-toggle-btn {
     background: transparent;
     border: none;
@@ -182,14 +199,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    /* GÓC PHẢI TRÊN CỦA TRÌNH DUYỆT ĐỘC LẬP HOÀN TOÀN */
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
 }
 
 .lang-toggle-btn:hover {
@@ -293,7 +304,7 @@ body {
 .habit-dots {
     display: flex;
     gap: 4px;
-    margin-top: auto; 
+    margin-top: 10px; 
     align-self: flex-start;
 }
 
@@ -675,8 +686,154 @@ body {
         justify-content: center; /* Căn giữa 2 nút cho cân đối */
     }
     
-    .month-display h2 {
-        width: auto;
-        font-size: 1.4rem;
-    }
+}
+
+/* =========================================
+   MODAL CÀI ĐẶT HOẠT ĐỘNG
+========================================= */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-content {
+    background: var(--glass-bg);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    border: 1px solid var(--primary-light);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.8rem;
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    color: var(--primary-light);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close-btn:hover { color: #f43f5e; }
+
+.add-activity-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.input-field {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 0.6rem;
+    border-radius: 8px;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.input-field:focus { border-color: var(--primary); }
+
+.color-picker {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+
+.wide-btn { width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1rem;}
+
+.settings-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.settings-activity-list::-webkit-scrollbar { width: 4px; }
+.settings-activity-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.setting-act-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-color, #fff);
+}
+
+.act-name-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.act-name-vi { font-weight: 500; font-size: 0.95rem;}
+.act-name-en { font-size: 0.8rem; color: var(--text-secondary); }
+
+.btn-delete-act {
+    background: transparent;
+    border: none;
+    color: #f43f5e;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+.btn-delete-act:hover { transform: scale(1.2); }
+
+.warning-text {
+    font-size: 0.75rem;
+    color: #fbbf24;
+    margin-top: 1rem;
+    text-align: center;
 }

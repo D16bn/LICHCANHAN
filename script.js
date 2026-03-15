@@ -15,22 +15,73 @@ const displayDate = document.getElementById('displayDate');
 const displayMonthYear = document.getElementById('displayMonthYear');
 const displayLunarDate = document.getElementById('displayLunarDate');
 
-// Checkboxes
-const checkThien = document.getElementById('checkThien');
-const checkYoga = document.getElementById('checkYoga');
-const checkPushup = document.getElementById('checkPushup');
-const dailyNote = document.getElementById('dailyNote');
+// Mảng Cấu Hình Ngôn Ngữ Bổ sung cho settingsModal
+const i18n = {
+    vi: {
+        title: "Lịch Tập Luyện Cá Nhân",
+        todayBtn: "Hôm nay",
+        lunarText: "Âm lịch: ",
+        habitsTitle: "Thói Quen Mỗi Ngày",
+        habitsSub: "Đánh dấu khi bạn hoàn thành",
+        statsTitle: "Thống Kê Tiến Độ",
+        notesTitle: "Ghi chú",
+        notesPlaceholder: "Nhập ghi chú cho ngày này...",
+        tabWeek: "Tuần",
+        tabMonth: "Tháng",
+        tabYear: "Năm",
+        monthName: "Tháng",
+        dayNames: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+        dayNamesFull: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+        settingsTitle: "Cài đặt Hoạt động",
+        settingsWarning: "* Lưu ý: Đổi tên / Xóa hoạt động cũ có thể làm lệch dữ liệu thống kê cũ.",
+        saveBtn: "Lưu & Áp Dụng"
+    },
+    en: {
+        title: "Personal Training Calendar",
+        todayBtn: "Today",
+        lunarText: "Lunar: ",
+        habitsTitle: "Daily Habits",
+        habitsSub: "Check when completed",
+        statsTitle: "Progress Stats",
+        notesTitle: "Notes",
+        notesPlaceholder: "Enter notes for this day...",
+        tabWeek: "Week",
+        tabMonth: "Month",
+        tabYear: "Year",
+        monthName: "Month",
+        dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        dayNamesFull: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        settingsTitle: "Activity Settings",
+        settingsWarning: "* Note: Renaming or deleting old activities might affect previous statistics.",
+        saveBtn: "Save & Apply"
+    }
+};
 
-// Stats Elements
-const tabBtns = document.querySelectorAll('.tab-btn');
-const statThien = document.getElementById('statThien');
-const statYoga = document.getElementById('statYoga');
-const statPushup = document.getElementById('statPushup');
-
+// State Manager
 let currentDate = new Date();
 let selectedDate = new Date();
-let habitData = {}; // Thay vì gán localStorage, để rỗng trước đợi DB kéo về
+let habitData = {}; 
 let currentLang = localStorage.getItem('calendarLang') || 'vi';
+
+// Cấu hình Hoạt động Mặc định (Sẽ bị ghi đè bởi Firebase nếu có)
+let activityConfig = [
+    { id: 'act_1', nameVi: 'Thiền', nameEn: 'Meditation', color: '#10b981', icon: 'fa-om' },
+    { id: 'act_2', nameVi: 'Yoga', nameEn: 'Yoga', color: '#8b5cf6', icon: 'fa-person-praying' },
+    { id: 'act_3', nameVi: 'Push up', nameEn: 'Push up', color: '#f59e0b', icon: 'fa-dumbbell' }
+];
+
+// Setting Modal Elements
+const btnSettings = document.getElementById('btnSettings');
+const settingsModal = document.getElementById('settingsModal');
+const closeModal = document.getElementById('closeModal');
+const btnAddActivity = document.getElementById('btnAddActivity');
+const btnSaveConfig = document.getElementById('btnSaveConfig');
+const activityListEl = document.getElementById('activityList');
+
+// Dynamic Containers
+const dynamicHabitList = document.getElementById('dynamicHabitList');
+const dynamicStatsGrid = document.getElementById('dynamicStatsGrid');
+const weekdaysGrid = document.getElementById('weekdaysGrid');
 
 // --------------------------------------------------------------------
 // FIREBASE CONFIGURATION (Lấy từ User)
@@ -48,74 +99,25 @@ const firebaseConfig = {
 // Khởi tạo Firebase App và Database
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
-// --------------------------------------------------------------------
-
-const i18n = {
-    vi: {
-        title: "Lịch Tập Luyện Cá Nhân",
-        todayBtn: "Hôm nay",
-        lunarText: "Âm lịch: ",
-        habitsTitle: "Thói Quen Mỗi Ngày",
-        habitsSub: "Đánh dấu khi bạn hoàn thành",
-        habitThien: "Thiền",
-        habitYoga: "Yoga",
-        habitPushup: "Push up",
-        statsTitle: "Thống Kê Tiến Độ",
-        notesTitle: "Ghi chú",
-        notesPlaceholder: "Nhập ghi chú cho ngày này...",
-        tabWeek: "Tuần",
-        tabMonth: "Tháng",
-        tabYear: "Năm",
-        statThien: "Thiền",
-        statYoga: "Yoga",
-        statPushup: "Push up",
-        monthName: "Tháng",
-        dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
-    },
-    en: {
-        title: "Personal Training Calendar",
-        todayBtn: "Today",
-        lunarText: "Lunar: ",
-        habitsTitle: "Daily Habits",
-        habitsSub: "Check when completed",
-        habitThien: "Meditation",
-        habitYoga: "Yoga",
-        habitPushup: "Push up",
-        statsTitle: "Progress Stats",
-        notesTitle: "Notes",
-        notesPlaceholder: "Enter notes for this day...",
-        tabWeek: "Week",
-        tabMonth: "Month",
-        tabYear: "Year",
-        statThien: "Meditation",
-        statYoga: "Yoga",
-        statPushup: "Push up",
-        monthName: "Month",
-        dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    }
-};
-
-// Remove hardcoded dayNames
-// const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 
 // Initialize App
 function init() {
     flagIcon.src = currentLang === 'vi' ? 'https://flagcdn.com/w40/vn.png' : 'https://flagcdn.com/w40/gb.png';
     flagIcon.alt = currentLang.toUpperCase();
     applyLanguage(currentLang);
-    renderCalendar();
-    updateDetailPanel(selectedDate);
-    updateStats('week');
     
     // LẮNG NGHE DATA TỪ FIREBASE ĐÁM MÂY (Realtime Sync)
-    database.ref('habitTrackerData').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            habitData = data;
-        } else {
-            habitData = {};
+    database.ref('/').on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        
+        if (data.userConfig && data.userConfig.activities) {
+            activityConfig = data.userConfig.activities;
         }
-        // Data về -> Render lại Lịch và Bảng thông báo
+        
+        habitData = data.habitTrackerData || {};
+        
+        // Re-render mọi thứ khi có data
+        renderDynamicLayout();
         renderCalendar();
         updateDetailPanel(selectedDate);
         const activeTabEle = document.querySelector('.tab-btn.active');
@@ -142,7 +144,7 @@ function init() {
         updateDetailPanel(selectedDate);
     });
 
-    // Jump to specific Date
+// Jump to specific Date
     jumpDateInput.addEventListener('change', (e) => {
         if (!e.target.value) return;
         const [year, month, day] = e.target.value.split('-');
@@ -153,22 +155,25 @@ function init() {
         updateDetailPanel(selectedDate);
     });
 
-    // Checkbox Listeners
-    [checkThien, checkYoga, checkPushup].forEach(checkbox => {
-        checkbox.addEventListener('change', handleCheckChange);
+    // Delegated Checkbox Event cho Dynamic Habit List
+    dynamicHabitList.addEventListener('change', (e) => {
+        if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
+            handleDynamicCheckChange(e.target.dataset.id, e.target.checked);
+        }
     });
 
-    // Note Listener
+// Note Listener
+    const dailyNote = document.getElementById('dailyNote');
     dailyNote.addEventListener('input', (e) => {
         const dateStr = formatDate(selectedDate);
         if (!habitData[dateStr]) {
-            habitData[dateStr] = { thien: false, yoga: false, pushup: false, note: '' };
+            habitData[dateStr] = { note: '' };
         }
         habitData[dateStr].note = e.target.value;
         
-        // Clean up if all empty
-        if (!habitData[dateStr].thien && !habitData[dateStr].yoga && !habitData[dateStr].pushup && !habitData[dateStr].note.trim()) {
-            delete habitData[dateStr]; // Nếu đang xóa khỏi object
+        // Clean up
+        if (checkIfEmptyData(habitData[dateStr])) {
+            delete habitData[dateStr]; 
         }
         
         // Push object Lên Firebase (thay thế LocalStorage)
@@ -176,7 +181,7 @@ function init() {
         // Lưu ý: Không cần gọi renderCalendar() ở đây nữa vì sự kiện 'value' từ Firebase sẽ tự động fire và gọi hàm đó!
     });
     
-    // Tab Listeners
+// Tab Listeners
     tabBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             tabBtns.forEach(b => b.classList.remove('active'));
@@ -190,6 +195,31 @@ function init() {
         const nextLang = currentLang === 'vi' ? 'en' : 'vi';
         switchLanguage(nextLang);
     });
+    
+    // Modal Listeners
+    btnSettings.addEventListener('click', openSettingsModal);
+    closeModal.addEventListener('click', () => settingsModal.classList.remove('show'));
+    btnAddActivity.addEventListener('click', handleAddNewActivity);
+    btnSaveConfig.addEventListener('click', saveConfigToCloud);
+    
+    // Activity List Xóa Listener (Delegation)
+    activityListEl.addEventListener('click', (e) => {
+        let btn = e.target.closest('.btn-delete-act');
+        if (btn) {
+            const actId = btn.dataset.id;
+            activityConfig = activityConfig.filter(a => a.id !== actId);
+            renderSettingsActivityList();
+        }
+    });
+}
+
+function checkIfEmptyData(dayData) {
+    let isEmpty = true;
+    for (const key in dayData) {
+        if (key === 'note' && dayData.note.trim() !== '') isEmpty = false;
+        if (key !== 'note' && dayData[key] === true) isEmpty = false;
+    }
+    return isEmpty;
 }
 
 function switchLanguage(lang) {
@@ -198,11 +228,10 @@ function switchLanguage(lang) {
     localStorage.setItem('calendarLang', lang);
     applyLanguage(lang);
     
-    // Update button visual
     flagIcon.src = lang === 'vi' ? 'https://flagcdn.com/w40/vn.png' : 'https://flagcdn.com/w40/gb.png';
     flagIcon.alt = lang.toUpperCase();
     
-    // Re-render UI text based on date
+    renderDynamicLayout();
     renderCalendar();
     updateDetailPanel(selectedDate);
 }
@@ -221,6 +250,55 @@ function applyLanguage(lang) {
         if (dict[key]) {
             el.placeholder = dict[key];
         }
+    });
+}
+
+// Render UI Components Dynamic (Layout)
+function renderDynamicLayout() {
+    const langIdx = currentLang === 'vi' ? 'nameVi' : 'nameEn';
+    
+    // 1. Render Weekdays T2 T3 T4
+    weekdaysGrid.innerHTML = '';
+    const shortNames = i18n[currentLang].dayNames;
+    shortNames.forEach(d => {
+        const div = document.createElement('div');
+        div.textContent = d;
+        weekdaysGrid.appendChild(div);
+    });
+
+    // 2. Render Habit List HTML (Right Panel)
+    dynamicHabitList.innerHTML = '';
+    activityConfig.forEach(act => {
+        const hHTML = `
+            <label class="habit-item">
+                <input type="checkbox" data-id="${act.id}" value="${act.id}">
+                <span class="checkmark" style="border-color: ${act.color}"></span>
+                <div class="habit-info">
+                    <i class="fa-solid ${act.icon} habit-icon" style="color: ${act.color}"></i>
+                    <span>${act[langIdx]}</span>
+                </div>
+            </label>
+        `;
+        dynamicHabitList.innerHTML += hHTML;
+    });
+    
+    // Fix checkmark style injection for pseudo element isn't easy, we use JS logic to border color mapping.
+    
+    // 3. Render Stats Grid
+    dynamicStatsGrid.innerHTML = '';
+    activityConfig.forEach(act => {
+        const sHTML = `
+            <div class="stat-item">
+                <div class="stat-icon" style="color: ${act.color}; background: rgba(255,255,255,0.1)">
+                    <i class="fa-solid ${act.icon}"></i>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-label">${act[langIdx]}</span>
+                    <span class="stat-value" id="stat_${act.id}">0</span>
+                </div>
+            </div>
+        `;
+        dynamicStatsGrid.innerHTML += sHTML;
     });
 }
 
@@ -308,27 +386,21 @@ function renderCalendar() {
         const lunarStr = getLunarInfo(year, month + 1, i);
         lunarSpan.textContent = lunarStr;
         
-        // Habit Dots
+        // Dynamic Habit Dots
         const dotsDiv = document.createElement('div');
         dotsDiv.classList.add('habit-dots');
         
         const dayData = habitData[cellDateStr] || {};
         
-        if (dayData.thien) {
-            const dot = document.createElement('div');
-            dot.classList.add('dot', 'thien', 'active');
-            dotsDiv.appendChild(dot);
-        }
-        if (dayData.yoga) {
-            const dot = document.createElement('div');
-            dot.classList.add('dot', 'yoga', 'active');
-            dotsDiv.appendChild(dot);
-        }
-        if (dayData.pushup) {
-            const dot = document.createElement('div');
-            dot.classList.add('dot', 'pushup', 'active');
-            dotsDiv.appendChild(dot);
-        }
+        activityConfig.forEach(act => {
+            if (dayData[act.id]) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot', 'active');
+                dot.style.backgroundColor = act.color;
+                dot.style.boxShadow = `0 0 5px ${act.color}`;
+                dotsDiv.appendChild(dot);
+            }
+        });
         
         // Note Indicator
         if (dayData.note && dayData.note.trim() !== '') {
@@ -362,9 +434,9 @@ function getMonthName(monthIndex, lang) {
     }
 }
 
-// Helper to get day names array
-function getDayNameArray(lang) {
-    return i18n[lang].dayNames;
+// Helper to get day names array (Full names for detail panel)
+function getDayNameArrayFull(lang) {
+    return i18n[lang].dayNamesFull;
 }
 
 // Update Right Panel for Selected Date
@@ -374,43 +446,69 @@ function updateDetailPanel(date) {
     const day = date.getDate();
     const dayIndex = date.getDay();
     
-    // Đồng bộ ô Nhập ngày (đã format yyyy-mm-dd sẵn)
     jumpDateInput.value = formatDate(date);
 
-    displayDayName.textContent = getDayNameArray(currentLang)[dayIndex];
+    displayDayName.textContent = getDayNameArrayFull(currentLang)[dayIndex];
     displayDate.textContent = day;
     displayMonthYear.textContent = getMonthName(month, currentLang) + ', ' + year;
     displayLunarDate.textContent = getLunarInfo(year, month + 1, day);
     
     const dateStr = formatDate(date);
-    const dayData = habitData[dateStr] || { thien: false, yoga: false, pushup: false, note: '' };
+    const dayData = habitData[dateStr] || { note: '' };
     
-    checkThien.checked = dayData.thien;
-    checkYoga.checked = dayData.yoga;
-    checkPushup.checked = dayData.pushup;
+    // Set checkbox values dynamically
+    const allCheckboxes = dynamicHabitList.querySelectorAll('input[type="checkbox"]');
+    allCheckboxes.forEach(cb => {
+        const actId = cb.dataset.id;
+        cb.checked = !!dayData[actId]; 
+        
+        // CSS Style trick for dynamically colored checkmark after checked
+        // Since we can't easily style pseudo inputs with inline JS color mapping, 
+        // we map color on the span itself.
+        const checkmark = cb.nextElementSibling;
+        const actObj = activityConfig.find(a => a.id === actId);
+        if (cb.checked) {
+            checkmark.style.backgroundColor = actObj.color;
+            checkmark.style.borderColor = actObj.color;
+        } else {
+            checkmark.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            checkmark.style.borderColor = 'var(--text-secondary)';
+        }
+    });
+    
+    const dailyNote = document.getElementById('dailyNote');
     dailyNote.value = dayData.note || '';
 }
 
-// Handle Checkbox Changes
-function handleCheckChange() {
+// Handle Dynamic Checkbox Changes
+function handleDynamicCheckChange(actId, isChecked) {
     const dateStr = formatDate(selectedDate);
     
     if (!habitData[dateStr]) {
-        habitData[dateStr] = { thien: false, yoga: false, pushup: false, note: '' };
+        habitData[dateStr] = { note: '' };
     }
     
-    habitData[dateStr].thien = checkThien.checked;
-    habitData[dateStr].yoga = checkYoga.checked;
-    habitData[dateStr].pushup = checkPushup.checked;
+    habitData[dateStr][actId] = isChecked;
     
-    // Clean up if all false to save space
-    if (!habitData[dateStr].thien && !habitData[dateStr].yoga && !habitData[dateStr].pushup && !habitData[dateStr].note.trim()) {
+    if (checkIfEmptyData(habitData[dateStr])) {
         delete habitData[dateStr];
     }
     
-    // Đẩy Dữ liệu lên Cloud Database
     database.ref('habitTrackerData').set(habitData);
-    // (RenderCalendar và updateStats sẽ được Firebase 'value' event lo lắng tự động kích hoạt)
+    
+    // Immediate Visual Update for Checkbox Background
+    const cb = document.querySelector(`input[data-id="${actId}"]`);
+    if(cb) {
+        const checkmark = cb.nextElementSibling;
+        const actObj = activityConfig.find(a => a.id === actId);
+        if (isChecked) {
+            checkmark.style.backgroundColor = actObj.color;
+            checkmark.style.borderColor = actObj.color;
+        } else {
+             checkmark.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+             checkmark.style.borderColor = 'var(--text-secondary)';
+        }
+    }
 }
 
 // Utility: get ISO week number (1-52)
@@ -422,14 +520,16 @@ function getWeekNumber(d) {
     return [d.getUTCFullYear(), weekNo];
 }
 
-// Calculate Statistics
+// Calculate Statistics (Dynamic Array Mapping)
 function updateStats(range) {
-    let thienCount = 0;
-    let yogaCount = 0;
-    let pushupCount = 0;
-    
     const activeDate = selectedDate; 
     const targetWeek = getWeekNumber(activeDate);
+    
+    // Khởi tạo các biến đếm dựa trên ID dynamic
+    const countMap = {};
+    activityConfig.forEach(act => {
+        countMap[act.id] = 0;
+    });
     
     for (const [dateStr, data] of Object.entries(habitData)) {
         const d = new Date(dateStr);
@@ -445,16 +545,21 @@ function updateStats(range) {
         }
         
         if (inRange) {
-            if (data.thien) thienCount++;
-            if (data.yoga) yogaCount++;
-            if (data.pushup) pushupCount++;
+            activityConfig.forEach(act => {
+                if(data[act.id]) {
+                     countMap[act.id]++;
+                }
+            });
         }
     }
     
     // Animate numbers up
-    animateValue(statThien, parseInt(statThien.textContent), thienCount, 300);
-    animateValue(statYoga, parseInt(statYoga.textContent), yogaCount, 300);
-    animateValue(statPushup, parseInt(statPushup.textContent), pushupCount, 300);
+    activityConfig.forEach(act => {
+        const statEl = document.getElementById(`stat_${act.id}`);
+        if(statEl) {
+             animateValue(statEl, parseInt(statEl.textContent) || 0, countMap[act.id], 300);
+        }
+    });
 }
 
 function animateValue(obj, start, end, duration) {
@@ -474,3 +579,64 @@ function animateValue(obj, start, end, duration) {
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(init, 100); 
 });
+
+/* =====================================
+   QUẢN LÝ SETUP HOẠT ĐỘNG (MODAL)
+===================================== */
+function openSettingsModal() {
+    renderSettingsActivityList();
+    settingsModal.classList.add('show');
+}
+
+function renderSettingsActivityList() {
+    activityListEl.innerHTML = '';
+    activityConfig.forEach(act => {
+        const hHTML = `
+            <div class="setting-act-item" style="border-left-color: ${act.color}">
+                <div class="act-name-group">
+                    <span class="act-name-vi">${act.nameVi}</span>
+                    <span class="act-name-en">${act.nameEn}</span>
+                </div>
+                <button class="btn-delete-act" data-id="${act.id}" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        `;
+        activityListEl.innerHTML += hHTML;
+    });
+}
+
+function handleAddNewActivity() {
+    const vi = document.getElementById('newActVi').value.trim();
+    const en = document.getElementById('newActEn').value.trim() || vi; // Mặc định EN giống VI nếu rỗng
+    const col = document.getElementById('newActColor').value;
+    
+    if (!vi) {
+        alert("Vui lòng nhập tên Hoạt động!");
+        return;
+    }
+    
+    // Tạo ID siêu độc nhất
+    const newId = 'act_' + Date.now();
+    activityConfig.push({
+        id: newId,
+        nameVi: vi,
+        nameEn: en,
+        color: col,
+        icon: 'fa-star' // Thay vì bắt user chọn icon phức tạp, set sao để cho gọn
+    });
+    
+    // Reset Form Input
+    document.getElementById('newActVi').value = '';
+    document.getElementById('newActEn').value = '';
+    
+    renderSettingsActivityList();
+}
+
+function saveConfigToCloud() {
+    // Đẩy dữ liệu Config mới tinh lên Cloud
+    database.ref('userConfig').set({ activities: activityConfig }).then(() => {
+        // Hide Modal
+        settingsModal.classList.remove('show');
+    }).catch((error) => {
+        alert("Lỗi kết nối lưu dữ liệu: " + error);
+    });
+}
