@@ -159,6 +159,8 @@ function init() {
     dynamicHabitList.addEventListener('change', (e) => {
         if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
             handleDynamicCheckChange(e.target.dataset.id, e.target.checked);
+            renderCalendar(); // Ép render lịch ngay lập tức để hiện Dấu Chấm
+            updateStats(document.querySelector('.tab-btn.active').dataset.range); // Ép update thống kê
         }
     });
 
@@ -634,6 +636,12 @@ function handleAddNewActivity() {
 function saveConfigToCloud() {
     // Đẩy dữ liệu Config mới tinh lên Cloud
     database.ref('userConfig').set({ activities: activityConfig }).then(() => {
+        // Cập nhật giao diện lập tức
+        renderDynamicLayout();
+        renderCalendar();
+        updateDetailPanel(selectedDate);
+        updateStats(document.querySelector('.tab-btn.active').dataset.range);
+        
         // Hide Modal
         settingsModal.classList.remove('show');
     }).catch((error) => {

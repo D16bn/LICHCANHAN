@@ -434,6 +434,7 @@ body {
     padding: 0.4rem 0.6rem; /* Ép mỏng item */
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .habit-item:hover {
@@ -444,8 +445,11 @@ body {
     position: absolute;
     opacity: 0;
     cursor: pointer;
-    height: 0;
-    width: 0;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    z-index: 2;
 }
 
 .checkmark {
