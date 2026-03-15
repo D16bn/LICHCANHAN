@@ -652,5 +652,28 @@ body {
         height: auto;
         min-height: 95vh;
         margin: 20px 0;
+}
+
+/* FIX RESPONSIVE MOBILE: Hiển thị lại nút Hôm nay và Nhập Ngày */
+@media (max-width: 600px) {
+    .calendar-header {
+        flex-direction: column;
+        gap: 12px;
+        position: static; /* Gỡ Absolute để đẩy lịch xuống, không đè lên nhau */
+        margin-bottom: 10px;
+    }
+    
+    .weekdays {
+        margin-top: 10px; /* Do header không còn absolute, trả margin-top về bt */
+    }
+    
+    .date-jump-controls {
+        width: 100%;
+        justify-content: center; /* Căn giữa 2 nút cho cân đối */
+    }
+    
+    .month-display h2 {
+        width: auto;
+        font-size: 1.4rem;
     }
 }
