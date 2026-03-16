@@ -541,6 +541,41 @@ function renderCalendar() {
         
         calendarGrid.appendChild(cell);
     }
+    
+    // Đảm bảo Ghi chú được chèn lại vào cuối Grid Lịch sau khi vẽ xong các ngày
+    const footerHTML = `
+        <div class="calendar-footer" id="calendarNotesArea">
+            <div class="notes-card" style="margin-bottom: 0;">
+                <h3 data-i18n="notesTitle">Ghi chú</h3>
+                <textarea id="dailyNote" data-i18n-placeholder="notesPlaceholder" placeholder="Nhập ghi chú cho ngày này..."></textarea>
+            </div>
+        </div>
+    `;
+    calendarGrid.insertAdjacentHTML('beforeend', footerHTML);
+    
+    // Gắn Event Listener ngay cho dailyNote mới được tạo
+    const notesInput = document.getElementById('dailyNote');
+    if(notesInput) {
+        notesInput.addEventListener('input', (e) => {
+            const dateStr = formatDate(selectedDate);
+            if (!habitData[dateStr]) {
+                habitData[dateStr] = {};
+            }
+            if (currentLang === 'vi') {
+                habitData[dateStr].note_vi = e.target.value;
+            } else {
+                habitData[dateStr].note_en = e.target.value;
+            }
+            habitData[dateStr].note = e.target.value; // For fallback backward compatibility
+            
+            if (checkIfEmptyData(habitData[dateStr])) {
+                delete habitData[dateStr];
+            }
+            
+            database.ref('habitTrackerData').set(habitData);
+            renderCalendar(); // Refresh note icon indicators
+        });
+    }
 }
 
 // Helper to get month name for display
