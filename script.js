@@ -570,7 +570,8 @@ function updateDetailPanel(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
     const day = date.getDate();
-    const dayIndex = date.getDay();
+    let dayIndex = date.getDay();
+    dayIndex = dayIndex === 0 ? 6 : dayIndex - 1; // Map Sun=0 to 6, Mon=1 to 0, etc.
     
     jumpDateInput.value = formatDate(date);
 

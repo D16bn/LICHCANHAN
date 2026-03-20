@@ -57,8 +57,8 @@ body {
     gap: 1.5rem; 
     width: 98%; 
     max-width: 1400px; 
-    min-height: 85vh;
-    height: auto;
+    height: 95vh;
+    max-height: 900px;
 }
 
 .glass-panel {
@@ -96,8 +96,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
-    padding-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    padding-top: 0.2rem;
 }
 
 .calendar-nav {
@@ -107,9 +107,9 @@ body {
 }
 
 .month-display h2 {
-    font-size: 1.4rem; /* Nhỏ lại tí nữa để chừa chỗ */
+    font-size: 1.2rem; /* Nhỏ tối đa */
     font-weight: 600;
-    width: 200px;
+    width: 160px;
     text-align: center;
 }
 
@@ -352,7 +352,7 @@ body {
 .action-section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem; /* Ép cực mạnh */
+    gap: 0.3rem; /* Ép siêu nhỏ */
     height: 100%; 
     justify-content: stretch; /* Dàn đều */
     overflow-y: auto; 
@@ -369,10 +369,10 @@ body {
 }
 
 .current-date-card {
-    padding: 0.8rem; /* Ép max padding */
+    padding: 0.4rem; /* Ép siêu mỏng padding */
     align-items: center;
     text-align: center;
-    flex-shrink: 0; /* Không cho phép ngày bị đè hỏng */
+    flex-shrink: 0; 
 }
 
 .solar-date-display {
@@ -390,10 +390,10 @@ body {
 }
 
 .date-num {
-    font-size: 2.2rem; /* Thu nhỏ mạnh số hiển thị Ngày góc phải (trước là 3.2rem) */
+    font-size: 1.6rem; /* Thu nhỏ chữ Ngày tối đa */
     font-weight: 700;
-    line-height: 1; /* Dãn dòng sát vào */
-    margin: 0.2rem 0; /* Giảm margin */
+    line-height: 1; 
+    margin: 0.1rem 0; 
     background: linear-gradient(135deg, #fff, #cbd5e1);
     background-clip: text;
     -webkit-background-clip: text;
@@ -431,15 +431,15 @@ body {
 }
 
 .subtitle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-bottom: 0.8rem; /* Rút margin */
+    margin-bottom: 0.3rem; /* Rút margin kịch kim */
 }
 
 .habit-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem; /* Giảm gap giữa các thói quen cực mạnh */
+    gap: 0.2rem; /* Giảm gap tối đa */
 }
 
 .quick-add-habit {
@@ -523,8 +523,8 @@ body {
     align-items: center;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
-    border-radius: 8px; /* Vuông hơn tí */
-    padding: 0.4rem 0.6rem; /* Ép mỏng item */
+    border-radius: 6px; 
+    padding: 0.2rem 0.5rem; /* Ép siêu mỏng item */
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -653,8 +653,8 @@ body {
 
 /* Stats - Đảm bảo cuộn được bên trong */
 .stats-card {
-    padding: 1rem;
-    flex: 1; /* Chiếm hết phần còn lại của cột phải */
+    padding: 0.5rem; /* Ép mỏng */
+    flex: 1;
     display: flex;
     flex-direction: column;
 }
@@ -668,8 +668,8 @@ body {
     display: flex;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    padding: 2px; /* Giảm từ 4px */
-    margin-bottom: 0.8rem; /* Gọn lại 50% */
+    padding: 2px;
+    margin-bottom: 0.4rem; /* Giảm margin tab */
 }
 
 .tab-btn {
