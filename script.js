@@ -30,8 +30,8 @@ const i18n = {
         tabMonth: "Tháng",
         tabYear: "Năm",
         monthName: "Tháng",
-        dayNames: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-        dayNamesFull: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+        dayNames: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        dayNamesFull: ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'],
         settingsTitle: "Cài đặt Hoạt động",
         settingsWarning: "* Lưu ý: Đổi tên / Xóa hoạt động cũ có thể làm lệch dữ liệu thống kê cũ.",
         saveBtn: "Lưu & Áp Dụng",
@@ -50,8 +50,8 @@ const i18n = {
         tabMonth: "Month",
         tabYear: "Year",
         monthName: "Month",
-        dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        dayNamesFull: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        dayNames: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        dayNamesFull: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         settingsTitle: "Activity Settings",
         settingsWarning: "* Note: Renaming or deleting old activities might affect previous statistics.",
         saveBtn: "Save & Apply",
@@ -439,7 +439,11 @@ function getLunarInfo(year, month, day) {
 
 // Render the calendar grid
 function renderCalendar() {
-    calendarGrid.innerHTML = '';
+    // Remove ONLY day cells
+    const existingDays = calendarGrid.querySelectorAll('.day-cell');
+    existingDays.forEach(cell => cell.remove());
+    
+    const notesArea = document.getElementById('calendarNotesArea');
     
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -454,14 +458,16 @@ function renderCalendar() {
         currentMonthYear.textContent = `${enMonths[month]} ${year}`;
     }
     
-    const firstDay = new Date(year, month, 1).getDay();
+    let firstDay = new Date(year, month, 1).getDay();
+    firstDay = firstDay === 0 ? 6 : firstDay - 1; // start on Monday
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
     // Empty cells for the start of the month
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.classList.add('day-cell', 'empty');
-        calendarGrid.appendChild(emptyCell);
+        if (notesArea) calendarGrid.insertBefore(emptyCell, notesArea);
+        else calendarGrid.appendChild(emptyCell);
     }
     
     const todayStr = formatDate(new Date());
@@ -539,42 +545,8 @@ function renderCalendar() {
             updateDetailPanel(selectedDate);
         });
         
-        calendarGrid.appendChild(cell);
-    }
-    
-    // Đảm bảo Ghi chú được chèn lại vào cuối Grid Lịch sau khi vẽ xong các ngày
-    const footerHTML = `
-        <div class="calendar-footer" id="calendarNotesArea">
-            <div class="notes-card" style="margin-bottom: 0;">
-                <h3 data-i18n="notesTitle">Ghi chú</h3>
-                <textarea id="dailyNote" data-i18n-placeholder="notesPlaceholder" placeholder="Nhập ghi chú cho ngày này..."></textarea>
-            </div>
-        </div>
-    `;
-    calendarGrid.insertAdjacentHTML('beforeend', footerHTML);
-    
-    // Gắn Event Listener ngay cho dailyNote mới được tạo
-    const notesInput = document.getElementById('dailyNote');
-    if(notesInput) {
-        notesInput.addEventListener('input', (e) => {
-            const dateStr = formatDate(selectedDate);
-            if (!habitData[dateStr]) {
-                habitData[dateStr] = {};
-            }
-            if (currentLang === 'vi') {
-                habitData[dateStr].note_vi = e.target.value;
-            } else {
-                habitData[dateStr].note_en = e.target.value;
-            }
-            habitData[dateStr].note = e.target.value; // For fallback backward compatibility
-            
-            if (checkIfEmptyData(habitData[dateStr])) {
-                delete habitData[dateStr];
-            }
-            
-            database.ref('habitTrackerData').set(habitData);
-            renderCalendar(); // Refresh note icon indicators
-        });
+        if (notesArea) calendarGrid.insertBefore(cell, notesArea);
+        else calendarGrid.appendChild(cell);
     }
 }
 
