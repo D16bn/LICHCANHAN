@@ -334,6 +334,7 @@ function switchLanguage(lang) {
     }
     
     // Update dependent components
+    renderDynamicLayout();
     renderCalendar();
     updateDetailPanel(selectedDate);
     renderSettingsActivityList();
